@@ -13,3 +13,21 @@ def eval_coverage(target_labels: dict, tested_labels: dict):
                 print(f"{label[0]}: TESTED")
             else:
                 print(f"{label[0]}: NOT TESTED")
+                
+                
+if __name__ == "__main__":
+    input_maude_file = "test.maude"
+    
+    _ , target_labels = label.label_file(input_maude_file) 
+    print(target_labels)
+    maude = pexpect.spawn('./maude.linux64 -no-ansi-color')
+    maude.sendline('set trace on .')
+    maude.sendline(f'load temp/{input_maude_file}')
+    maude.sendline('quit')
+
+    result = maude.read().decode()
+    # print(result)
+    tested_labels = parser.parse_labels(result)
+    # print(tested_labels)
+    
+    eval_coverage(target_labels, tested_labels)
