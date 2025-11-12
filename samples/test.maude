@@ -1,0 +1,9 @@
+mod SAMPLE is
+  sort Test .
+  op Test : -> Test .
+  op Test2 : -> Test . 
+
+  eq Test = Test2 .
+endm
+
+red Test .
