@@ -22,11 +22,11 @@ if __name__ == "__main__":
     print(target_labels)
     maude = pexpect.spawn('Maude-3.5.1/maude -no-ansi-color')
     maude.sendline('set trace on .')
-    maude.sendline(f'load temp/{input_maude_file}')
+    maude.sendline(f'load temp/test.maude')
     maude.sendline('quit')
 
     result = maude.read().decode()
-    # print(result)
+    print(result)
     tested_labels = parser.parse_labels(result)
     # print(tested_labels)
     

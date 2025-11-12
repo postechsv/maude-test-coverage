@@ -1,45 +1,87 @@
 import re
 import json
 
-# Matches “rl … [label X]” or “ceq … [label Y]” at the start of a line
-_LABEL_RE = re.compile(
-    r'^(?P<kind>eq|crl|rl|ceq)\b.*?\[label\s+(?P<label>[^\]]+)\]',
+# Pattern for lines starting with a Maude keyword (allowing for indentation)
+_KIND_RE = re.compile(
+    r'^\s*(?P<kind>eq|crl|rl|ceq)\b(?P<rest>.*)$',
     re.MULTILINE
 )
+
+# Pattern 1: Matches [label-name] : (at the start of the 'rest' string)
+_LABEL_RE_FORMAT_1 = re.compile(r'^\s*\[(?P<label>[^\]]+)\]\s*:')
+
+# Pattern 2: Matches [label label-name] (anywhere in the 'rest' string)
+_LABEL_RE_FORMAT_2 = re.compile(r'\[label\s+(?P<label>[^\]]+)\]')
 
 def parse_labels(spec: str) -> dict:
     """
     Parse a Maude specification fragment and return a dictionary
     of rule and equation labels.
 
+    This version handles two common label formats:
+    1. eq [label-name] : ...
+    2. eq ... [label label-name] .
+
     Parameters
     ----------
     spec : str
-        The text containing rules (rl) and conditional equations (ceq).
+        The text containing rules (rl, crl) and equations (eq, ceq).
 
     Returns
     -------
     dict
-        {'RULE': [...], 'EQ': [...]} where each list contains the
-        extracted label strings.
+        {'Rule': [...], 'Eq': [...]} where each list contains the
+        extracted label strings, sorted alphabetically.
     """
     rule_labels, eq_labels = set(), set()
 
-    for m in _LABEL_RE.finditer(spec):
-        if m.group('kind') == 'rl':
-            rule_labels.add(m.group('label'))
-        else:                       # 'ceq'
-            eq_labels.add(m.group('label'))
+    # Find all lines that start with a keyword (eq, rl, etc.)
+    for m_kind in _KIND_RE.finditer(spec):
+        kind = m_kind.group('kind')
+        rest_of_line = m_kind.group('rest')
+        
+        label = None
+        
+        # Check for format 1: [label-name] :
+        m_label_1 = _LABEL_RE_FORMAT_1.match(rest_of_line)
+        if m_label_1:
+            label = m_label_1.group('label')
+        else:
+            # If not found, check for format 2: [label label-name]
+            m_label_2 = _LABEL_RE_FORMAT_2.search(rest_of_line)
+            if m_label_2:
+                label = m_label_2.group('label')
+        
+        # If a label was found by either method, add it
+        if label:
+            if kind in ('rl', 'crl'):
+                rule_labels.add(label)
+            elif kind in ('eq', 'ceq'):
+                eq_labels.add(label)
 
-    return {"Rule": rule_labels, "Eq": eq_labels}
+    # Convert sets to sorted lists for consistent JSON output
+    return {"Rule": sorted(list(rule_labels)), "Eq": sorted(list(eq_labels))}
 
 # --- Example -------------------------------------------------------------
 if __name__ == "__main__":
+    # This sample contains *both* label formats
     sample = """
-    *********** rule
+    *********** rule (Format 1)
+    rl [aa] : Test2 => Test3 .
+
+    *********** equation (Format 1)
+    eq [bb] : Test = Test2 .
+
+    *********** equation (Format 2)
+    ceq Hi(N) = Hi(100) if N =/= 100 = true [label test1] .
+    
+    *********** rule (Format 2)
     rl BYE(N) => Hi(N) [label test2] .
 
-    *********** equation
-    ceq Hi(N) = Hi(100) if N =/= 100 = true [label test1] .
+    *********** indented rule (Format 1)
+      crl [indented-rule] : A => B if C .
+
+    *********** rule with no label
+    rl NoLabel => Other .
     """
     print(json.dumps(parse_labels(sample), indent=2))

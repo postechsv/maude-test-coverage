@@ -2,8 +2,17 @@ mod SAMPLE is
   sort Test .
   op Test : -> Test .
   op Test2 : -> Test . 
-
-  eq [tempEQ1] : Test = Test2 .
+  op Test3 : -> Test .
+  op Test4 : -> Test .
+  op Test5 : -> Test .
+ 
+  rl [aa] : Test2 => Test3 . 
+  rl [cc] : Test4 => Test5 .
+  
+  eq [tempEQ1] : Test5 = Test2 .
+  eq [bb] : Test = Test2 .
 endm
 
 red Test .
+rew Test .
+red Test5 . 
