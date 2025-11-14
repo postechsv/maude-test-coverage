@@ -68,5 +68,4 @@ def label_file(in_path: str):
     out_file = out_dir / Path(in_path).name
     out_file.write_text(processed, encoding="utf-8")
 
-    print(out_file, out_dir)
     return str(out_file), _collect_labels(processed)
