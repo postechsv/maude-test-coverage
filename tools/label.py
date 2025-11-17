@@ -49,13 +49,16 @@ def add_temp_labels(source: str) -> str:
     return "\n".join(out) + "\n"
 
 def _collect_labels(text: str) -> dict:
-    rules, eqs = [], []
+    rules, eqs = {}, {}
     for line in text.splitlines():
         m = LABEL_FIND_RE.match(line)
         if not m:
             continue
         kind, label = m.groups()
-        (eqs if kind in ("ceq", "eq") else rules).append([label, False])
+        if kind in ("ceq", "eq"):
+            eqs[label] = False
+        else:
+            rules[label] = False
     return {"Rule": rules, "Eq": eqs}
 
 def label_file(in_path: str):

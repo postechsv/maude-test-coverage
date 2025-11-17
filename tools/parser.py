@@ -51,12 +51,11 @@ def parse_labels(spec: str, target_labels: dict) -> dict:
             if m_label_2:
                 label = m_label_2.group('label')
         
-        # If a label was found by either method, add it
         if label:
-            if kind in ('rl', 'crl'):
+            if kind in ('rl', 'crl') and label in target_labels['Rule']:
                 target_labels['Rule'][label] = True
-            elif kind in ('eq', 'ceq'):
-                target_labels['Rule'][label] = False
+            elif kind in ('eq', 'ceq') and label in target_labels['Eq']:
+                target_labels['Eq'][label] = True
     return target_labels
 
 # --- Example -------------------------------------------------------------
@@ -81,4 +80,4 @@ if __name__ == "__main__":
     *********** rule with no label
     rl NoLabel => Other .
     """
-    print(json.dumps(parse_labels(sample), indent=2))
+    # print(json.dumps(parse_labels(sample), indent=2))

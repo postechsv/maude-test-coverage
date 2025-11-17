@@ -21,26 +21,38 @@ def eval_coverage_detail(target_labels: dict, tested_labels: dict):
                 print(f"{label[0]}: NOT TESTED")
 
 
-def eval_coverage(target_labels: dict, tested_labels: dict):
-    number_of_equations = len(target_labels["Eq"])
-    number_of_rewrite = len(target_labels["Rule"])
+def eval_coverage(tested_labels: dict) -> list:
+    number_of_equations = 0
+    number_of_rewrite = 0
+    number_of_passed_eq = 0
+    number_of_passed_rw = 0
     
-    number_of_passed_eq = len(tested_labels["Eq"])
-    number_of_passed_rw = len(tested_labels["Rule"])
+    
+    for label in tested_labels['Rule']:
+        number_of_rewrite += 1
+        if(tested_labels['Rule'][label]):
+            number_of_passed_rw += 1
+        
+    for label in tested_labels['Eq']:
+        number_of_equations += 1
+        if(tested_labels['Eq'][label]):
+            number_of_passed_eq += 1
+    
     return [number_of_equations, number_of_passed_eq, number_of_rewrite, number_of_passed_rw] 
 
 
 def run_test_file(maude_path: str, file: str):
     input_maude_file = file
     _ , target_labels = label.label_file(input_maude_file)
-    print(target_labels) 
     maude = pexpect.spawn(maude_path)
     maude.sendline('set trace on .')
     maude.sendline(f'load temp/{input_maude_file}')
     maude.sendline('quit')
     result = maude.read().decode()
+    
     if(DEBUG_MODE):
         print(result)    
+        
     tested_labels = parser.parse_labels(result, target_labels)
     return target_labels, tested_labels
            
@@ -79,7 +91,11 @@ def main():
         test_file_str = str(test_file_path)
         # Run the same logic as your original script
         target_labels, tested_labels = run_test_file(maude_path, test_file_str)
-        result = eval_coverage(target_labels, tested_labels)
+        
+        if(DEBUG_MODE):
+            print(tested_labels)
+        
+        result = eval_coverage(tested_labels)
         
         # Append the test file path to its result (matching original logic)
         result.append(test_file_str)
