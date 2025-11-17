@@ -13,7 +13,7 @@ _LABEL_RE_FORMAT_1 = re.compile(r'^\s*\[(?P<label>[^\]]+)\]\s*:')
 # Pattern 2: Matches [label label-name] (anywhere in the 'rest' string)
 _LABEL_RE_FORMAT_2 = re.compile(r'\[label\s+(?P<label>[^\]]+)\]')
 
-def parse_labels(spec: str) -> dict:
+def parse_labels(spec: str, target_labels: dict) -> dict:
     """
     Parse a Maude specification fragment and return a dictionary
     of rule and equation labels.
@@ -33,7 +33,6 @@ def parse_labels(spec: str) -> dict:
         {'Rule': [...], 'Eq': [...]} where each list contains the
         extracted label strings, sorted alphabetically.
     """
-    rule_labels, eq_labels = set(), set()
 
     # Find all lines that start with a keyword (eq, rl, etc.)
     for m_kind in _KIND_RE.finditer(spec):
@@ -55,12 +54,10 @@ def parse_labels(spec: str) -> dict:
         # If a label was found by either method, add it
         if label:
             if kind in ('rl', 'crl'):
-                rule_labels.add(label)
+                target_labels['Rule'][label] = True
             elif kind in ('eq', 'ceq'):
-                eq_labels.add(label)
-
-    # Convert sets to sorted lists for consistent JSON output
-    return {"Rule": sorted(list(rule_labels)), "Eq": sorted(list(eq_labels))}
+                target_labels['Rule'][label] = False
+    return target_labels
 
 # --- Example -------------------------------------------------------------
 if __name__ == "__main__":

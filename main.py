@@ -8,6 +8,8 @@ import argparse
 import sys
 from pathlib import Path
 
+DEBUG_MODE = False
+
 def eval_coverage_detail(target_labels: dict, tested_labels: dict):
     for kind in ["Rule", "Eq"]:
         print(f"================={kind}==================") 
@@ -30,14 +32,16 @@ def eval_coverage(target_labels: dict, tested_labels: dict):
 
 def run_test_file(maude_path: str, file: str):
     input_maude_file = file
-    _ , target_labels = label.label_file(input_maude_file) 
+    _ , target_labels = label.label_file(input_maude_file)
+    print(target_labels) 
     maude = pexpect.spawn(maude_path)
     maude.sendline('set trace on .')
     maude.sendline(f'load temp/{input_maude_file}')
     maude.sendline('quit')
     result = maude.read().decode()
-    print(result)    
-    tested_labels = parser.parse_labels(result)
+    if(DEBUG_MODE):
+        print(result)    
+    tested_labels = parser.parse_labels(result, target_labels)
     return target_labels, tested_labels
            
 def main():
