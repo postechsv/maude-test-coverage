@@ -74,7 +74,6 @@ def main():
         print(f"Error: Path '{test_dir}' is not a valid directory.", file=sys.stderr)
         sys.exit(1)
 
-    # 4. Find all .maude files recursively
     # .rglob("*.maude") means "recursive glob" (search all subfolders)
     test_files = list(test_dir.rglob("*.maude"))
 
