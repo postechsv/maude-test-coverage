@@ -13,7 +13,6 @@ DEBUG_MODE = False
 def eval_coverage_detail(target_labels: dict, tested_labels: dict):
     for kind in ["Rule", "Eq"]:
         print(f"================={kind}==================") 
-        # print(tested_labels)
         for label in target_labels[kind]:
             if(label[0] in tested_labels[kind]):
                 print(f"{label[0]}: TESTED")
