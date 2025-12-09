@@ -89,7 +89,6 @@ def main():
     for test_file_path in test_files:
         # Convert the Path object to a string for the function
         test_file_str = str(test_file_path)
-        # Run the same logic as your original script
         target_labels, tested_labels = run_test_file(maude_path, test_file_str)
         
         if(DEBUG_MODE):
