@@ -8,7 +8,6 @@ _KIND_RE = re.compile(
 
 _LABEL_RE_FORMAT_1 = re.compile(r'^\s*\[(?P<label>[^\]]+)\]\s*:')
 
-# Pattern 2: Matches [label label-name] (anywhere in the 'rest' string)
 _LABEL_RE_FORMAT_2 = re.compile(r'\[label\s+(?P<label>[^\]]+)\]')
 
 def parse_labels(spec: str, target_labels: dict) -> dict:
