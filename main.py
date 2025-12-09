@@ -97,7 +97,6 @@ def main():
         
         result = eval_coverage(tested_labels)
         
-        # Append the test file path to its result (matching original logic)
         result.append(test_file_str)
         results.append(result)
 
