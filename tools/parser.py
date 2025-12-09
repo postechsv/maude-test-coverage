@@ -41,7 +41,6 @@ def parse_labels(spec: str, target_labels: dict) -> dict:
         
         label = None
         
-        # Check for format 1: [label-name] :
         m_label_1 = _LABEL_RE_FORMAT_1.match(rest_of_line)
         if m_label_1:
             label = m_label_1.group('label')
