@@ -101,7 +101,6 @@ def main():
         result.append(test_file_str)
         results.append(result)
 
-    # 6. Print the final report
     print(results)
     printer.print_report(results) 
               
