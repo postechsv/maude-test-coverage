@@ -68,7 +68,6 @@ def main():
     maude_path = "Maude-3.5.1/maude -no-ansi-color"
     test_dir = Path(args.test_directory)
 
-    # 3. Validate the input directory
     if not test_dir.is_dir():
         print(f"Error: Path '{test_dir}' is not a valid directory.", file=sys.stderr)
         sys.exit(1)
