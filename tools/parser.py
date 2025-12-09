@@ -57,7 +57,6 @@ def parse_labels(spec: str, target_labels: dict) -> dict:
 
 # --- Example -------------------------------------------------------------
 if __name__ == "__main__":
-    # This sample contains *both* label formats
     sample = """
     *********** rule (Format 1)
     rl [aa] : Test2 => Test3 .
